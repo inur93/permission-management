@@ -6,8 +6,8 @@
 
     <groupId>com.vormadal</groupId>
     <artifactId>permission-management</artifactId>
-    <packaging>war</packaging>
-    <version>1.0.1</version>
+    <packaging>jar</packaging>
+    <version>1.0.2</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <failOnMissingWebXml>false</failOnMissingWebXml>
