@@ -110,8 +110,8 @@
 
     <distributionManagement>
         <repository>
-            <id>dk.agenia.maven.repo</id>
-            <name>dk.agenia.maven.repo</name>
+            <id>com.vormadal.permissionmanagement</id>
+            <name>com.vormadal.permissionmanagement</name>
             <url>git:releases://git@bitbucket.org:vormadal/permission-management.git</url>
         </repository>
     </distributionManagement>
