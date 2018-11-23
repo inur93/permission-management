@@ -1,8 +1,7 @@
-package dk.agenia.permissionmanagement.models;
+package com.vormadal.permissionmanagement.models;
 
 import javax.ws.rs.core.SecurityContext;
 import java.security.Principal;
-import java.util.Map;
 import java.util.Set;
 
 /**

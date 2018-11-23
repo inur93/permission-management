@@ -1,4 +1,4 @@
-package dk.agenia.permissionmanagement.models;
+package com.vormadal.permissionmanagement.models;
 
 import lombok.Data;
 

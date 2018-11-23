@@ -1,10 +1,10 @@
-package dk.agenia.permissionmanagement.filters;
+package com.vormadal.permissionmanagement.filters;
 
-import dk.agenia.permissionmanagement.exceptions.MissingRoleError;
-import dk.agenia.permissionmanagement.exceptions.MissingRolesException;
-import dk.agenia.permissionmanagement.exceptions.RestError;
-import dk.agenia.permissionmanagement.models.ApplicationSecurityContext;
-import dk.agenia.permissionmanagement.models.SecurityUser;
+import com.vormadal.permissionmanagement.models.ApplicationSecurityContext;
+import com.vormadal.permissionmanagement.exceptions.MissingRoleError;
+import com.vormadal.permissionmanagement.exceptions.MissingRolesException;
+import com.vormadal.permissionmanagement.exceptions.RestError;
+import com.vormadal.permissionmanagement.models.SecurityUser;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.security.DenyAll;

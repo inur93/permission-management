@@ -1,10 +1,9 @@
-package dk.agenia.permissionmanagement.models;
+package com.vormadal.permissionmanagement.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import java.security.Principal;
-import java.util.HashSet;
 import java.util.Set;
 
 /**

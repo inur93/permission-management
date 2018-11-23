@@ -1,4 +1,4 @@
-package dk.agenia.permissionmanagement.exceptions;
+package com.vormadal.permissionmanagement.exceptions;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;

@@ -1,4 +1,4 @@
-package dk.agenia.permissionmanagement.exceptions;
+package com.vormadal.permissionmanagement.exceptions;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
