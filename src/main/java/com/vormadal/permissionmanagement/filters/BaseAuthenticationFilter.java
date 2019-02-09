@@ -26,6 +26,7 @@ import java.util.Set;
 import static java.util.Arrays.asList;
 
 /**
+ *
  * <p>Created: 14-04-2018</p>
  * <p>Author: Runi</p>
  *
@@ -35,12 +36,14 @@ import static java.util.Arrays.asList;
  * <p>However if the user is not resolved or the provided user does include its actual roles, the user might be denied access.</p>
  *
  * <p>This filter determines if a user has access by looking for the following annotations:</p>
+ *
  * <li>
  * <ul>{@link DenyAll}</ul>
  * <ul>{@link PermitAll}</ul>
  * <ul>{@link RolesAllowed}</ul>
  * </li>
  * <p>If the endpoint is not annotated either on the class or method it will correspond using {@link PermitAll}</p>
+ *
  */
 @Slf4j
 public abstract class BaseAuthenticationFilter<U extends SecurityUser> implements ContainerRequestFilter {
@@ -137,7 +140,7 @@ public abstract class BaseAuthenticationFilter<U extends SecurityUser> implement
      * @param requestContext use this to get the necessary information and optionally also set additional contextual elements.
      * @return the current user
      */
-    abstract U resolveUser(ContainerRequestContext requestContext);
+    public abstract U resolveUser(ContainerRequestContext requestContext);
 
     private void error(ContainerRequestContext requestContext, WebApplicationException e) {
         requestContext
