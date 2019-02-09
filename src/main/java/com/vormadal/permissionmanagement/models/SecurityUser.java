@@ -5,26 +5,14 @@ import lombok.*;
 
 import java.security.Principal;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Created: 14-04-2018
- * Owner: Runi
+ * Author: Runi
  */
 
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
-public class SecurityUser extends BaseModel implements Principal {
-
+public abstract class SecurityUser implements Principal {
     private Set<String> roles;
-    private String username;
-    @JsonIgnore
-    private String hash;
-
-    @Override
-    public String getName() {
-        return username;
-    }
 }

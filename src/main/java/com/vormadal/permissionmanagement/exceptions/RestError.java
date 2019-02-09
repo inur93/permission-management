@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * Created: 14-04-2018
- * Owner: Runi
+ * Author: Runi
  */
 
 @Data

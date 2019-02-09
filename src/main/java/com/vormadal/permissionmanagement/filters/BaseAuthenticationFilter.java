@@ -19,11 +19,28 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
+import static java.util.Arrays.asList;
+
 /**
- * Created: 14-04-2018
- * Owner: Runi
+ * <p>Created: 14-04-2018</p>
+ * <p>Author: Runi</p>
+ *
+ * <p>By implementing and registering this filter all requests except those with Method: OPTIONS will be processed.</p>
+ * <p>The filter looks for the 'authorization' header and calls the 'resolveUser' method with the header as argument.</p>
+ * <p>It is up to the user how the user is resolved.</p>
+ * <p>However if the user is not resolved or the provided user does include its actual roles, the user might be denied access.</p>
+ *
+ * <p>This filter determines if a user has access by looking for the following annotations:</p>
+ * <li>
+ * <ul>{@link DenyAll}</ul>
+ * <ul>{@link PermitAll}</ul>
+ * <ul>{@link RolesAllowed}</ul>
+ * </li>
+ * <p>If the endpoint is not annotated either on the class or method it will correspond using {@link PermitAll}</p>
  */
 @Slf4j
 public abstract class BaseAuthenticationFilter<U extends SecurityUser> implements ContainerRequestFilter {
@@ -34,17 +51,25 @@ public abstract class BaseAuthenticationFilter<U extends SecurityUser> implement
     HttpHeaders headers;
 
 
+    /**
+     * <p>Processes the following annotation on the requested method and/or class:</p>
+     * <li>
+     * <ul>{@link DenyAll}</ul>
+     * <ul>{@link PermitAll}</ul>
+     * <ul>{@link RolesAllowed}</ul>
+     * </li>
+     *
+     * @param requestContext
+     * @throws IOException
+     */
     public void filter(ContainerRequestContext requestContext) throws IOException {
         //options requests are not filtered
         if ("options".equals(requestContext.getMethod().toLowerCase())) return;
-
-
         //Get the authentification passed in HTTP headers parameters
-        String auth = requestContext.getHeaderString("authorization");
+        //String auth = requestContext.getHeaderString("authorization");
         U user;
-
         try {
-            user = resolveUser(auth);
+            user = resolveUser(requestContext);
             requestContext.setSecurityContext(new ApplicationSecurityContext(user, requestContext.getUriInfo().getRequestUri().getScheme()));
         } catch (WebApplicationException e) {
             error(requestContext, e);
@@ -54,54 +79,45 @@ public abstract class BaseAuthenticationFilter<U extends SecurityUser> implement
         try {
             processDenyAll(resourceInfo);
             if (processPermitAll(resourceInfo)) return;
-            processRolesAllowed(requestContext, resourceInfo, user);
-        }
-        catch (MissingRolesException e){
+            if (processRolesAllowed(requestContext, resourceInfo, user)) return;
+        } catch (MissingRolesException e) {
             error(requestContext, e);
-        }
-        catch (WebApplicationException e){
+        } catch (WebApplicationException e) {
             error(requestContext, e);
         }
 
     }
 
-    private void processRolesAllowed(ContainerRequestContext requestContext, ResourceInfo resourceInfo, U user) throws MissingRolesException {
-        RolesAllowed annotation = resourceInfo.getResourceMethod().getAnnotation(RolesAllowed.class);
-        if (annotation == null) {
-            annotation = resourceInfo.getResourceClass().getAnnotation(RolesAllowed.class);
-        }
-        if (annotation == null) return;
+    private boolean processRolesAllowed(ContainerRequestContext requestContext, ResourceInfo resourceInfo, U user) throws MissingRolesException {
+        List<String> roles = new ArrayList<>();
+        RolesAllowed methodAnnotation = resourceInfo.getResourceMethod().getAnnotation(RolesAllowed.class);
+        RolesAllowed classAnnotation = resourceInfo.getResourceClass().getAnnotation(RolesAllowed.class);
+        if (methodAnnotation != null) roles.addAll(asList(methodAnnotation.value()));
+        if (classAnnotation != null) roles.addAll(asList(classAnnotation.value()));
 
-        String[] roles = annotation.value();
         MultivaluedMap<String, String> parameters = requestContext.getUriInfo().getPathParameters();
         Set<String> keys = parameters.keySet();
-        for(String key : keys){
+        for (String key : keys) {
             String value = parameters.getFirst(key);
-            for(int i = 0; i < roles.length; i++){
-                roles[i] = roles[i].replace("{" + key + "}", value);
+            for (int i = 0; i < roles.size(); i++) {
+                roles.set(i, roles.get(i).replace("{" + key + "}", value));
             }
         }
 
         if (user == null) throw new WebApplicationException("Not authorized", Response.Status.UNAUTHORIZED);
-        boolean allow = false;
+
         for (String role : roles) {
             if (user.getRoles().contains(role)) {
-                allow = true;
-                break;
+                return true;
             }
         }
-
-        if (!allow)
-            throw new MissingRolesException("Missing one of roles", roles, Response.Status.FORBIDDEN);
+        throw new MissingRolesException("Missing one of roles", roles.toArray(new String[0]), Response.Status.FORBIDDEN);
     }
 
     private boolean processPermitAll(ResourceInfo resourceInfo) {
         PermitAll permitAllMethod = resourceInfo.getResourceMethod().getAnnotation(PermitAll.class);
         PermitAll permitAllClass = resourceInfo.getResourceClass().getAnnotation(PermitAll.class);
-        if (permitAllMethod != null || permitAllClass != null) {
-            return true;
-        }
-        return false;
+        return permitAllMethod != null || permitAllClass != null;
     }
 
     private void processDenyAll(ResourceInfo resourceInfo) {
@@ -113,7 +129,15 @@ public abstract class BaseAuthenticationFilter<U extends SecurityUser> implement
 
     }
 
-    public abstract U resolveUser(String token);
+    /**
+     * <p>This method should resolve to the current user.</p>
+     * <p>The user could be retrieved from the authorization header (recommended):</p>
+     * <code>requestContext.getHeader("authorization")</code>
+     *
+     * @param requestContext use this to get the necessary information and optionally also set additional contextual elements.
+     * @return the current user
+     */
+    abstract U resolveUser(ContainerRequestContext requestContext);
 
     private void error(ContainerRequestContext requestContext, WebApplicationException e) {
         requestContext
