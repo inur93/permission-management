@@ -89,6 +89,7 @@ public abstract class BaseAuthenticationFilter<U extends SecurityUser> implement
             error(requestContext, e);
         }
 
+        error(requestContext, new MissingRolesException("no one is allowed here.", null, Response.Status.FORBIDDEN));
     }
 
     private boolean processRolesAllowed(ContainerRequestContext requestContext, ResourceInfo resourceInfo, U user) throws MissingRolesException {
@@ -98,6 +99,7 @@ public abstract class BaseAuthenticationFilter<U extends SecurityUser> implement
         if (methodAnnotation != null) roles.addAll(asList(methodAnnotation.value()));
         if (classAnnotation != null) roles.addAll(asList(classAnnotation.value()));
 
+        if(roles.size() == 0) return true; //no role required - allow all
         MultivaluedMap<String, String> parameters = requestContext.getUriInfo().getPathParameters();
         Set<String> keys = parameters.keySet();
         for (String key : keys) {
