@@ -2,7 +2,6 @@ package com.vormadal.permissionmanagement.models;
 
 import javax.ws.rs.core.SecurityContext;
 import java.security.Principal;
-import java.util.Set;
 
 /**
  * <p>Created: 05-10-2018</p>
@@ -12,7 +11,6 @@ import java.util.Set;
 public class ApplicationSecurityContext implements SecurityContext {
 
     private SecurityUser user;
-    private Set<String> roles;
     private String scheme;
     public ApplicationSecurityContext(SecurityUser user, String scheme){
         this.user = user;

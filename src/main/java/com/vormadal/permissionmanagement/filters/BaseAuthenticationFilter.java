@@ -1,9 +1,9 @@
 package com.vormadal.permissionmanagement.filters;
 
-import com.vormadal.permissionmanagement.models.ApplicationSecurityContext;
 import com.vormadal.permissionmanagement.exceptions.MissingRoleError;
 import com.vormadal.permissionmanagement.exceptions.MissingRolesException;
 import com.vormadal.permissionmanagement.exceptions.RestError;
+import com.vormadal.permissionmanagement.models.ApplicationSecurityContext;
 import com.vormadal.permissionmanagement.models.SecurityUser;
 import lombok.extern.slf4j.Slf4j;
 
